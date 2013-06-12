@@ -50,6 +50,7 @@ $(function() {
         messageClass = messageClass || 'chat-message';
         var li = $('<li></li>');
         li.addClass(messageClass);
+        messageHtml = linkSearcher(messageHtml);
         li.html(messageHtml);
         messageList.append(li);
 
@@ -73,6 +74,13 @@ $(function() {
 
     function escape_tags(str) {
         return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function linkSearcher (str) {
+        var urlre = new RegExp('(https?://([-\\w]+\\.)?[-\\w]+\\.[\\w\\.]{2,5}([-/\\w=\\+\\%\\.\\?&;:#,\'\"]+)?)', "gi");
+        str = str.replace(urlre, '<a href="$1">$1</a>');
+        console.log(str);
+        return str;
     }
 
     // Event Handlers
