@@ -1,8 +1,19 @@
 /**
- * Client chat controller.
+ * Silky Smooth Baritone Chat Client v0.0.3
+ * https://github.com/bbengfort/silky-smooth-baritone/
+ *
+ * Copyright 2013 Benjamin Bengfort
+ * Released under an Apache License
+ *
+ * Dependencies: 
+ *     1. Klaus Hartl's jquery.cookie.js
+ *     2. socket.io browser Javascript
  */
 
 $(function() {
+
+    // Configuration
+    $.cookie.json = true;
 
     // Global Variables.
     var socket   = io.connect();
@@ -10,17 +21,30 @@ $(function() {
     var chatForm = $('#chatForm');
     var messageList = $('#messages');
     var userList    = $('#users');
-    var nickname;
+    var userState   = $.cookie('ssbc_user_state');
 
     // Socket Handlers
     socket.on('connect', function() {
 
         function getNickname() {
-            nickname = prompt('Enter a chat name:');
-            if (!nickname) {
-                nickname = getNickname();
+
+            function promptForName() {
+                nickname = prompt('Enter a chat name:');
+                if (!nickname) {
+                    nickname = promptForName();
+                }
+                return nickname;
             }
-            return nickname;
+
+            // Attempt to fetch the nickname from a cookie
+            if (userState && userState.nickname) {
+                return userState.nickname;
+            } else {
+                // Prompt for name, set cookie and return.
+                nickname = promptForName();
+                $.cookie('ssbc_user_state', {nickname:nickname}, {expires:1, path:'/'});
+                return nickname;
+            }   
         }
 
         // Send a join event with your name.
